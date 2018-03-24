@@ -55,6 +55,7 @@ class LSTMNetwork(nn.Module):
                  preprocess=preprocess_states):
         super(LSTMNetwork, self).__init__()
         self._num_actions = num_actions
+        #print("number of actions ", num_actions) 
         self._obs_shape = observation_shape
         self._intypes = input_types
         self._preprocess = preprocess
@@ -65,21 +66,34 @@ class LSTMNetwork(nn.Module):
 
     def _create_network(self):
         C,H,W = self._obs_shape
+        hidden_dim = 256
         self.conv1 = nn.Conv2d(C, 12, (2,2), stride=1) # h=4, w=9 then out_h = (h-f)/s + 1 = 3, out_w = (w-f)/s+1 = 8
         self.conv2 = nn.Conv2d(12, 24, (2,2), stride=1) #out_h_2 = 2, out_w_2 = 7
         #input = (6,4,9) -> (24, 2, 7)
-        self.lstm = nn.LSTMCell(24*2*7, 256, bias=True)
-        self.fc_policy = nn.Linear(256, self._num_actions)
-        self.fc_value = nn.Linear(256, 1)
+        convs = [self.conv1, self.conv2]
+        C_out,H_out,W_out = calc_output_shape((C,H,W), convs)
+
+        self.lstm = nn.LSTMCell(C_out*H_out*W_out, hidden_dim, bias=True)
+        #print("lstm type", self.lstm)
+        self.fc_policy = nn.Linear(hidden_dim, self._num_actions)
+        self.fc_value = nn.Linear(hidden_dim, 1)
+        #self.lstm = nn.LSTMCell(24*2*7, 256, bias=True)
+        #self.fc_policy = nn.Linear(256, self._num_actions)
+        #self.fc_value = nn.Linear(256, 1)
 
     def forward(self, inputs):
         volatile = not self.training
         inputs, rnn_inputs = inputs
         inputs = self._preprocess(inputs, self._intypes, volatile)
+        #print(inputs)
         x = F.relu(self.conv1(inputs))
+        #print(x)
         x = F.relu(self.conv2(x))
+        #print(x)
         x = x.view(x.size()[0], -1)
-        hx, cx = self.lstm(x, rnn_inputs)
+        print(rnn_inputs)
+        hx, cx = self.lstm(x, rnn_inputs)  #----PROBLEM APPEARS HERE
+        #print(hx, cx)
         return self.fc_value(hx), self.fc_policy(hx), (hx,cx)
 
     def get_initial_state(self, batch_size):
