@@ -154,7 +154,7 @@ class AgentSprite(prefab_sprites.MazeWalker):
 class MazeDrape(prefab_drapes.Scrolly):
   def update(self, actions, board, layers, backdrop, things, the_plot):
     #del backdrop, things, layers  # Unused
-
+																		#print(actions) - lovely Nones
     if actions == 0:    # is the player going upward?
       self._north(the_plot)
     elif actions == 1:  # is the player going downward?
@@ -231,9 +231,7 @@ def dummy_episode():
         while a_t not in action_keys:
             a_t = input("Choose one of the following actions: {}:\n".format(action_keys))
         obs_t, r_t, discount_t = game.play(action_keys.index(a_t))
-        #pr
         print('r =', r_t, 'gamma = ', discount_t)
-        print("Look at me", print_obs(obs_t))
         #obs_t, r_t = game.play(action_keys.index(a_t))
         
         if discount_t == 0: break
@@ -253,7 +251,11 @@ def T_lab_observation(obs_t):
 	return matr_obs
 	
 
-
+def T_lab_actions():
+	action_keys = [0, 1, 2, 3, 4]
+	return(np.ndarray(action_keys))
+	
+	
 if __name__ == '__main__':
   
   dummy_episode()
