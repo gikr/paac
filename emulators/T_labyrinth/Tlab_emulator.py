@@ -38,7 +38,7 @@ class TLabyrinthEmulator(BaseEnvironment):
         act = [i for i, x in enumerate(action) if x]
         
         if not self.game.game_over:
-            obs, reward, discount = self.game.play(act)
+            obs, reward, discount = self.game.play(act[0])
         termination = 1-discount
         
         observation = T_lab_observation(obs)
