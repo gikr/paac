@@ -139,7 +139,7 @@ class AgentSprite(prefab_sprites.MazeWalker):
 
     elif actions == 4:  # is the player doing nothing?
       self._stay(board, the_plot)
-      the_plot.add_reward(0)
+      the_plot.add_reward(MOVEMENT_REWARD)
     
     if layers['L'][things['A'].position] == True:
       the_plot.add_reward(LEFT_REWARD)
