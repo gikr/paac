@@ -11,7 +11,7 @@ class TLabyrinthEmulator(BaseEnvironment):
         self.game = make_game(True, None)
         self.legal_actions = T_lab_actions().shape
         #print(self.legal_actions)
-        #self.noop = 'pass'
+        self.noop = 'pass'
         self.id = actor_id
         
         self.game = make_game(True, None)
@@ -49,7 +49,7 @@ class TLabyrinthEmulator(BaseEnvironment):
         return self.legal_actions
 
     def get_noop(self):
-        return self.legal_actions[0]
+        return self.noop
 
     def on_new_frame(self, frame):
         pass
